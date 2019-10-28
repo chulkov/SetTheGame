@@ -6,3 +6,20 @@
 //
 
 import Foundation
+
+class Game {
+    
+    private(set) var cards = [Card]()
+    
+    
+    
+    
+    init() {
+        for _ in 1...81{
+            cards.append(Card())
+        }
+        
+        
+    }
+    
+}
