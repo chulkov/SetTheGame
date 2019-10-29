@@ -8,20 +8,20 @@
 import UIKit
 
 class ViewController: UIViewController {
-    let game = Game()
+    var game = Game()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         startNewGame()
         view.backgroundColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
         for card in cardButtons{
-            card.titleLabel!.font = card.titleLabel!.font.withSize(30)
+            card.titleLabel!.font = card.titleLabel!.font.withSize(21)
             card.layer.cornerRadius = 8.0
             card.titleLabel?.numberOfLines = 3
-
+            
         }
     }
-
+    
     @IBAction func newGameAction(_ sender: UIButton) {
         startNewGame()
     }
@@ -29,55 +29,58 @@ class ViewController: UIViewController {
     @IBOutlet var cardButtons: [UIButton]!
     
     func startNewGame() {
-        cardsOnDesk.removeAll()
+        game = Game()
         updateView()
     }
     
     func updateView(){
-        for index in cardButtons.indices{
-            let button = cardButtons[index]
-            let card = game.cards[index]
-            button.setAttributedTitle(randomSetCard(for: card), for: .normal)
-            button.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        for index in game.cardsOnTable.indices{
+            cardButtons[index].setAttributedTitle(setCardTitle(with: game.cardsOnTable[index]), for: .normal)
+            cardButtons[index].backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         }
     }
     
-    private var shape = ["▲", "●", "■"]
-    private var color = [#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1), #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 1), #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1),#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 0.1487585616), #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529, alpha: 0.1464041096), #colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 0.1522902397)]
-     private var fill = [4.0, -1.0]
     
-    private var cardsOnDesk = [Int:NSAttributedString]()
     
-    private func randomSetCard(for card: Card) -> NSAttributedString {
-        
-        if cardsOnDesk[card.cardId] == nil {
-            
-            
-            let chosenShape = shape.randomElement() ?? "?"
-            var finalImage = ""
-            for _ in 0...Int.random(in: 0..<3){
-                finalImage.append(chosenShape)
-            }
-            
-            
-            let font = UIFont.systemFont(ofSize: 36)
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.alignment = .center
-            paragraphStyle.firstLineHeadIndent = 5.0
-            
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: font,
-                .foregroundColor: color.randomElement() ?? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
-                .strokeWidth: fill.randomElement() ?? 1.0
-            ]
-            
-            let attributedQuote = NSAttributedString(string: finalImage , attributes: attributes)
-            
-            
-            
-            cardsOnDesk[card.cardId] = attributedQuote
+    
+    
+    func setCardTitle(with card: Card) -> NSAttributedString {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .strokeColor: ModelToView.colors[card.color]!,
+            .strokeWidth: ModelToView.strokeWidth[card.fill]!,
+            .foregroundColor: ModelToView.colors[card.color]!.withAlphaComponent(ModelToView.alpha[card.fill]!),
+        ]
+        var cardTitle = ModelToView.shapes[card.shape]!
+        switch card.number {
+        case .two: cardTitle = "\(cardTitle)\n\(cardTitle)"
+        case .three: cardTitle = "\(cardTitle)\n\(cardTitle)\n\(cardTitle)"
+        default:
+            break
         }
-        return cardsOnDesk[card.cardId] ?? NSAttributedString.init(string: "?")
+        
+        return NSAttributedString(string: cardTitle, attributes: attributes)
     }
 }
+
+
+
+
+
+
+
+struct ModelToView {
+    
+    static let shapes: [Card.Shape: String] = [.circle: "●", .triangle: "▲", .square: "■"]
+    static var colors: [Card.Color: UIColor] = [.red: #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1), .blue: #colorLiteral(red: 0.2196078449, green: 0.007843137719, blue: 0.8549019694, alpha: 1), .green: #colorLiteral(red: 0, green: 0.9768045545, blue: 0, alpha: 1)]
+    static var alpha: [Card.Fill: CGFloat] = [.solid: 1.0, .empty: 0.40, .stripe: 0.15]
+    static var strokeWidth: [Card.Fill: CGFloat] = [.solid: -5, .empty: 5, .stripe: -5]
+}
+
+var cardsOnDesk = [Int:NSAttributedString]()
+
+    
+
+
+
+
 
