@@ -9,6 +9,11 @@ import UIKit
 
 class ViewController: UIViewController {
     var game = Game()
+    private var selectedButton = [UIButton]()
+    
+    private var hintedButton = [UIButton]()
+    @IBOutlet weak var scoreLabel: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +26,61 @@ class ViewController: UIViewController {
             
         }
     }
+    
+    
+    @IBAction func cardsButtonPressed(_ sender: UIButton) {
+        
+        if let cardIndex = cardButtons.firstIndex(of: sender) {
+            if cardIndex < game.cardsOnTable.count {
+                game.chooseCard(at: cardIndex)
+                chooseButton(at: sender)
+                updateView()
+            }
+        } else {
+            print("chosen card was not in cardButtons")
+        }
+        //print(selectedButton.count)
+    }
+    
+    @IBAction private func hintButtonPressed(_ sender: UIButton) {
+        game.hint()
+        if game.hintCard.count > 0 {
+            for hint in 0...2 {
+                let index = game.hintCard[hint]
+                cardButtons[index].layer.borderColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
+                cardButtons[index].layer.borderWidth = 3.0
+                hintedButton.append(cardButtons[index])
+            }
+            hintedButton.removeAll()
+        }
+    }
+    
+    
+    
+    private func updateScore() {
+        scoreLabel.text = "\(game.score)"
+    }
+    
+    private func chooseButton(at card: UIButton) {
+        if selectedButton.contains(card) {
+            card.layer.borderColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0)
+            card.layer.borderWidth = 3.0
+            selectedButton.remove(at: selectedButton.firstIndex(of: card)!)
+            return
+        } else if selectedButton.count == 3 {
+            cardButtons.forEach() { $0.layer.borderColor = #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 0) }
+            selectedButton.removeAll()
+            updateScore()
+        }
+        selectedButton += [card]
+        card.layer.borderColor = #colorLiteral(red: 0.8078431487, green: 0.02745098062, blue: 0.3333333433, alpha: 1)
+        card.layer.borderWidth = 3.0
+    }
+    
+    
+    
+    
+    
     
     @IBAction func newGameAction(_ sender: UIButton) {
         startNewGame()
@@ -63,11 +123,6 @@ class ViewController: UIViewController {
 }
 
 
-
-
-
-
-
 struct ModelToView {
     
     static let shapes: [Card.Shape: String] = [.circle: "●", .triangle: "▲", .square: "■"]
@@ -76,7 +131,7 @@ struct ModelToView {
     static var strokeWidth: [Card.Fill: CGFloat] = [.solid: -5, .empty: 5, .stripe: -5]
 }
 
-var cardsOnDesk = [Int:NSAttributedString]()
+//var cardsOnDesk = [Int:NSAttributedString]()
 
     
 

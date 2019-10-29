@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Card {
+struct Card : Equatable{
     var isMatched = false
     var cardId: Int
     
