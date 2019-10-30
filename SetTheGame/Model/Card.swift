@@ -25,30 +25,30 @@ struct Card : Equatable{
     }
     
     enum Shape: String {
-        case square = "square"
-        case circle = "circle"
-        case triangle = "triangle"
+        case square
+        case circle
+        case triangle
         static let all = [Shape.square, .circle, .triangle]
     }
     
     enum Color: String {
-        case red = "red"
-        case blue = "blue"
-        case green = "green"
+        case red
+        case blue
+        case green
         static let all = [Color.red, .blue, .green]
     }
     
     enum Fill: String {
-        case solid = "solid"
-        case empty = "empty"
-        case stripe = "stripe"
+        case solid
+        case empty
+        case stripe
         static let all = [Fill.solid, .empty, .stripe]
     }
     
     enum Number : Int {
-        case one = 1
-        case two = 2
-        case three = 3
+        case one 
+        case two
+        case three
         static let all = [Number.one, .two, .three]
     }
     
